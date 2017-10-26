@@ -285,7 +285,7 @@ namespace TCO
             rowDataList.Add(entrymaker.addEntry(timeStr, description));
             
             Request appendCells = requestAppendCells(spreadsheetId, tabName, rowDataList);
-            Request autoSize = requestDimensionAutoSize(spreadsheetId, tabName);
+            Request autoSize = requestDimensionAutoSize(spreadsheetId, tabName, 0);
 
             BatchUpdateSpreadsheetRequest batchRequest = new BatchUpdateSpreadsheetRequest();
             batchRequest.Requests = new List<Request>();
@@ -390,17 +390,17 @@ namespace TCO
             GridRange range = new GridRange();
             range.SheetId = getTabIndex(spreadsheetId, tabName);
             range.StartColumnIndex = startPoint.X;
-            range.StartRowIndex = startPoint.Y - 1;
+            range.StartRowIndex = startPoint.Y;
             range.EndColumnIndex = endPoint.X + 1;
             range.EndRowIndex = endPoint.Y + 1;
             
             Request updateCells = requestUpdateCells(spreadsheetId, tabName, rows, range, "*");
-            Request autoSize = requestDimensionAutoSize(spreadsheetId, tabName);
+            Request autoSize = requestDimensionAutoSize(spreadsheetId, tabName, 0);
 
             BatchUpdateSpreadsheetRequest batchRequest = new BatchUpdateSpreadsheetRequest();
             batchRequest.Requests = new List<Request>();
-            batchRequest.Requests.Add(updateCells);
             batchRequest.Requests.Add(autoSize);
+            batchRequest.Requests.Add(updateCells);
 
             return ExecuteBatchRequest(batchRequest, spreadsheetId);
         }
