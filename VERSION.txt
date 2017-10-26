@@ -1,0 +1,33 @@
+VERSION HISTORY
+
+added	- An added feature
+remov	- A removed feature
+fixed	- id of issue - A known issue that's been fixed
+issue	- id of issue - A known issue that's been logged 
+	(an * before the id of the issue means part of the solution has been completed
+	 and the description of the issue will state what was done)
+
+NOTES ABOUT THIS VERSION:
+	Google.Apis.Sheets.v4 and related libraries are required.
+	This application will not run without a valid client_secret.json file in the exe directory. 
+	A client_secret.json is not included in this source code so one must be obtained from goole
+	for this application to function. https://developers.google.com/sheets/api/quickstart/go
+
+	The current state of the application is more of a proof-of-concept than a useful application.
+	It logs accumulated time to google sheets but no exceptions are handled so the if any exceptions
+	are thrown the program crashes and doesn't log the time passed since the last log was made.
+	For this application to log to google sheets a sheet id and access to google sheets doc must
+	for a google account must be provided.
+
+v0.0.0.0 - Initial Commit
+	added ui - Basic concept for main ui
+	added ui - Temporary form to input google sheets data
+	added core - Global InputHook for background mouse and keyboard activity detection
+	added core - Application flow and state management
+	added core - Simple time tracking
+	added core - Google.Apis.Sheets.v4 and related libraries
+	added core - Ability to create batch requests, read from sheets and write to sheets
+	added core - Ability to create various types of requests
+	added core - Ability to create a new tab in a sheets doc and add a title bar
+	added core - Ability to append a row of cells containing data to a sheets doc
+	added core - Create rowdata
