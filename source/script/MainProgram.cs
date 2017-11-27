@@ -33,24 +33,11 @@ namespace TCO
 
     public class MainProgram
     {
-        private int m_logSession = 0;
-        private bool m_foundSheetAndTab = false;
+        public static readonly string VERSION = "v0.0.1.0";
 
-        /// <summary>
-        /// The sheet id used for google sheets logging
-        /// </summary>
-        static String m_spreadsheetId = "";
-        //static String m_spreadsheetId = "1FIvf2k_LAlry76FEPReGCcsnHNQ8x_5NED0KJkWrF58";
-        /// <summary>
-        /// The name id of the current tab to log data to
-        /// </summary>
-        static string m_spreadsheetTab = "";
-        //static string m_spreadsheetTab = "October";
-        /// <summary>
-        /// Additional information included in the log
-        /// </summary>
-        private string m_description = "";
-        //private string m_description = "Write stuff here";
+        private bool m_foundGoogleSheetAndTab = false;
+        private PrefsData m_userPrefs = null;
+
         /// <summary>
         /// The formatted sting used to display the total time.
         /// </summary>
@@ -74,23 +61,10 @@ namespace TCO
         /// </summary>
         private int m_logTimeAccumulator = 0;
         /// <summary>
-        /// The amount of time inbetween automatic log entries.
-        /// </summary>
-        private int m_logInterval = 1800000;
-        /// <summary>
-        /// The amount of time the user must be inactive to recieve a warning.
-        /// </summary>
-        private int m_idleTime = 120000;
-        /// <summary>
-        /// The amount of time a user must be inactive for the 
-        /// time accumulator to stop and have the time since last activity removed.
-        /// </summary>
-        private int m_timeoutTime = 300000;
-        /// <summary>
         /// The interval at which the program checks if there was activity, 
         /// adds to time, updates the time string and checks if it should log.
         /// </summary>
-        private int m_pollInteval = 1000;
+        private int m_pollInterval = 1000;
         /// <summary>
         /// This is time that's been logged and can't be removed
         /// </summary>
@@ -112,7 +86,7 @@ namespace TCO
         public MainProgram()
         {
             m_timer = new System.Windows.Forms.Timer();
-            m_timer.Interval = m_pollInteval;
+            m_timer.Interval = m_pollInterval;
             m_timer.Enabled = true;
             m_timer.Tick += (s, e) =>
             {
@@ -128,7 +102,7 @@ namespace TCO
 
                 // do this if not timed out
                 if (m_state != (int)States.TimeOut)
-                        m_timeBuffer += m_pollInteval;
+                        m_timeBuffer += m_pollInterval;
 
                 // do this is user was active or program is in sustain mode
                 if (isUserActive == true ||
@@ -138,11 +112,12 @@ namespace TCO
                         m_logTimeAccumulator += m_timeBuffer;
                         m_timeBuffer = 0;
                     }
-
+               
                     timeToString();
+                    updateTodaysLogEntries();
                     updateState();
 
-                    if (m_timePending >= m_logInterval)
+                    if (m_timePending >= m_userPrefs.getInt(PrefsData.PrefInt.LogInterval))
                         logTime();
                 }
                 EventHandler handler = TimerTick;
@@ -150,113 +125,78 @@ namespace TCO
                     handler(this, e);
             };
             importFileData();
-            sheetsInterfaceSetup();
+            googleSheetsInterfaceSetup();
         }
 
         private void importFileData()
         {
-            string filePath = System.Environment.CurrentDirectory + "\\config.prefs";
-            if (File.Exists(filePath))
-            {
-                //FileStream file = File.Open(filePath, FileMode.Open);
+            m_userPrefs = UserPrefs.getPrefs();
 
-                bool sheetIdFound = false;
-                foreach (string line in File.ReadLines(filePath))
-                {
-                    if (line.Length == 0)
-                        continue;
-                    if (line[0] == '/')
-                        continue;
-                    if (line.Contains("ssid"))
-                    {
-                        m_spreadsheetId = line.Remove(0, line.LastIndexOf(":") + 1);
-                        if (m_spreadsheetId != "")
-                            sheetIdFound = true;
-                    }
-                    if (line.Contains("stid"))
-                    {
-                        m_spreadsheetTab = line.Remove(0, line.LastIndexOf(":") + 1);
-                        if (sheetIdFound == true &&
-                            m_spreadsheetTab != "")
-                            m_foundSheetAndTab = true;
-                    }
-                    if (line.Contains("desc"))
-                        m_description = line.Remove(0, line.LastIndexOf(":") + 1);
+            PrefsData.PrefLogIndex index = m_userPrefs.getActiveSheet();
 
-                    // get intervals and times
-                    if (line.Contains("logi"))
-                        int.TryParse(line.Remove(0, line.LastIndexOf(":") + 1), out m_logInterval);
-                    if (line.Contains("idlt"))
-                        int.TryParse(line.Remove(0, line.LastIndexOf(":") + 1), out m_idleTime);
-                    if (line.Contains("timt"))
-                        int.TryParse(line.Remove(0, line.LastIndexOf(":") + 1), out m_timeoutTime);
-                    if (line.Contains("poli"))
-                        int.TryParse(line.Remove(0, line.LastIndexOf(":") + 1), out m_pollInteval);
+            LocalLogger.loadTodayLogsFromFile();
+            m_timeStr = LocalLogger.getTodaysEntryData(
+                m_userPrefs.getLogName(index),
+                m_userPrefs.getProjectName(index),
+                m_userPrefs.getProjectDescription(index),
+                LocalLogger.EntryDataIndex.Time);
+            m_timeConfirmed = timeStringToMilliseconds(m_timeStr);
 
-                    checkTimeLimits();
-                }
-
-            }
+            checkTimeLimits();
         }
 
         private void checkTimeLimits()
         {
             // create minimum values intervals and times can be
-            if (m_pollInteval < 1000) // 1 second min
-                m_pollInteval = 1000;
-            if (m_pollInteval > 300000) // 5 minutes max
-                m_pollInteval = 300000;
-            if (m_logInterval < 300000) // 5 minutes min
-                m_logInterval = 300000;
-            if (m_idleTime < m_pollInteval) // can not be shorter than poll interval
-                m_idleTime = m_pollInteval;
-            if (m_timeoutTime < m_idleTime) // can not be shorter than idle time
-                m_timeoutTime = m_idleTime;
+            if (m_pollInterval < 1000) // 1 second min
+                m_pollInterval = 1000;
+            if (m_pollInterval > 300000) // 5 minutes max
+                m_pollInterval = 300000;
+            if (m_userPrefs.getInt(PrefsData.PrefInt.LogInterval) < 300000) // 5 minutes min
+                m_userPrefs.setInt(300000, PrefsData.PrefInt.LogInterval);
+            if (m_userPrefs.getInt(PrefsData.PrefInt.IdleTime) < m_pollInterval) // can not be shorter than poll interval
+                m_userPrefs.setInt(m_pollInterval, PrefsData.PrefInt.LogInterval);
+            if (m_userPrefs.getInt(PrefsData.PrefInt.TimeoutTime) < m_userPrefs.getInt(PrefsData.PrefInt.IdleTime)) // can not be shorter than idle time
+                m_userPrefs.setInt(m_userPrefs.getInt(PrefsData.PrefInt.IdleTime), PrefsData.PrefInt.TimeoutTime);
         }
 
         private void exportFileData()
         {
-            string filePath = System.Environment.CurrentDirectory + "\\config.prefs";
-            //FileStream file = File.Open(filePath, FileMode.Create);
-
-            string data =
-                "// Log interval, poll interval, time until idle and time until timeout" +
-                "\n//" +
-                "\n// logi - the time interval between logs in milliseconds" +
-                "\n//          -300000 minimum 1800000 recommended" +
-                "\n// idlt - the time in milliseconds for the program to enter idle state" +
-                "\n//          -Must not be less than poll interval" +
-                "\n// timt - the time in milliseconds for the program to enter timeout state" +
-                "\n//          -Must not be less than idle time" +
-                "\n// poli - the tick rate in milliseconds of the internal timer" +
-                "\n//          -1000~300000 range 1000 recommended" +
-                "\n//" +
-                "\n#logi:" + m_logInterval +
-                "\n#idlt:" + m_idleTime +
-                "\n#timt:" + m_timeoutTime +
-                "\n#poli:" + m_pollInteval +
-                "\n// Active sheet, tab and description from the last session" +
-                "\n#ssid:" + m_spreadsheetId + 
-                "\n#stid:" + m_spreadsheetTab + 
-                "\n#desc:" + m_description;
-
-            File.WriteAllText(filePath, data);
+            UserPrefs.setPrefs(m_userPrefs);
         }
 
-        private void sheetsInterfaceSetup()
+        private void googleSheetsInterfaceSetup()
         {
-            if (m_foundSheetAndTab == false)
+            // not run if the target isn't set up within the program
+            if (m_foundGoogleSheetAndTab == false)
                 return;
+
+            PrefsData.PrefLogIndex index = m_userPrefs.getActiveSheet();
+
+            string googleSheetsId = m_userPrefs.getLogGoogleId(index);
+            string tabName = m_userPrefs.getProjectName(index);
+
+            if (googleSheetsId == "" || tabName == "")
+            {
+                DialogMessage message = new DialogMessage("Information", "A Google Sheets id and tab name must be set in order to use google sheets interface.\nInteraction with google sheet will not function.");
+                message.ShowDialog();
+                return;
+            }
             
-            if (!TCOSheetsInterface.tabExists(m_spreadsheetId, m_spreadsheetTab))
+            // check wth google sheets to see if the tab needs to be created
+            if (!TCOSheetsInterface.tabExists(m_userPrefs.getLogGoogleId(index), m_userPrefs.getProjectName(index)))
             {
                 System.Drawing.Size size = new System.Drawing.Size(5, 2);
-                if (!TCOSheetsInterface.createTab(m_spreadsheetId, m_spreadsheetTab, size, 1))
-                    Console.WriteLine("Create new tab [" + m_spreadsheetTab + "] failed");
+                if (!TCOSheetsInterface.createTab(m_userPrefs.getLogGoogleId(index), m_userPrefs.getProjectName(index), size, 1))
+                    Console.WriteLine("Create new tab [" + m_userPrefs.getProjectName(index) + "] failed");
 
+                // create the header bar in the created tab
                 SheetsLogEntry entryMaker = new SheetsLogEntry();
                 List<Google.Apis.Sheets.v4.Data.RowData> rows = entryMaker.createTitleBar();
-                TCOSheetsInterface.updateCells(m_spreadsheetId, m_spreadsheetTab, "A1", "E2", rows);
+                TCOSheetsInterface.updateCells(
+                    m_userPrefs.getLogGoogleId(index), 
+                    m_userPrefs.getProjectName(index), 
+                    "A1", "E2", rows);
             }
         }
 
@@ -265,21 +205,23 @@ namespace TCO
             return m_timeStr;
         }
 
+        public string getDescString()
+        {
+            return m_userPrefs.getProjectDescription(m_userPrefs.getActiveSheet());
+        }
+
         public int getState()
         {
             return m_state;
         }
-
-
+        
         /// <summary>
         /// Pauses/Starts the program timer and returns the resulting state.
         /// </summary>
         /// <returns></returns>
         public void onClickButton()
         {
-            // remove the sustained bit from the flags
-            int state = m_state;
-            switch (state)
+            switch (m_state)
             {
                 case (int)States.Active: m_state = (int)States.Pause; break;
                 case (int)States.Idle: m_state = (int)States.Pause; break;
@@ -302,29 +244,40 @@ namespace TCO
 
         public void logTime()
         {
-            if (m_foundSheetAndTab == false)
-                return;
-
-            DialogMessage message = new DialogMessage("", "");
-            if (TCOSheetsInterface.getIsServiceActive() == false)
-                Console.WriteLine("Google Sheets service inactive.");
-            
-            if (!TCOSheetsInterface.WriteTimeNowToCell(m_spreadsheetId, m_spreadsheetTab, m_timeStr, m_description))
+            // run only if write to local file succeeds
+            if (LocalLogger.writeToLogFile())
             {
-                Console.WriteLine("Attempt to log to google sheets failed.");
-                return;
+                if (m_foundGoogleSheetAndTab == false)
+                    return;
+
+                PrefsData.PrefLogIndex index = m_userPrefs.getActiveSheet();
+
+                if (TCOSheetsInterface.getIsServiceActive() == false)
+                    Console.WriteLine("Google Sheets service inactive.");
+
+                if (!TCOSheetsInterface.WriteTimeNowToCell(
+                    m_userPrefs.getLogGoogleId(index), 
+                    m_userPrefs.getProjectName(index), 
+                    m_timeStr, m_userPrefs.getProjectDescription(index)))
+                {
+                    Console.WriteLine("Attempt to log to google sheets failed.");
+                    return;
+                }
+                
+                m_timeConfirmed += m_timePending;
+                m_timePending = 0;
+                m_logTimeAccumulator = 0;
+                Console.WriteLine("Total time logged is " + m_timeStr);
             }
-            
-            m_logSession++;
-            m_timeConfirmed += m_timePending;
-            m_timePending = 0;
-            m_logTimeAccumulator = 0;
-            Console.WriteLine("Total time logged is " + m_timeStr);
+            else
+            {
+                Console.WriteLine("Log failed");
+            }
         }
 
         private void updateState()
         {
-            if (m_timeBuffer >= m_timeoutTime &&
+            if (m_timeBuffer >= m_userPrefs.getInt(PrefsData.PrefInt.TimeoutTime) &&
                 m_state != (int)States.TimeOut &&
                 m_neverTimeout == false)
             {
@@ -334,7 +287,7 @@ namespace TCO
                 Console.WriteLine("m_state = States.Stop");
                 m_state = (int)States.TimeOut;
             }
-            else if (m_timeBuffer >= m_idleTime &&
+            else if (m_timeBuffer >= m_userPrefs.getInt(PrefsData.PrefInt.IdleTime) &&
                      m_state != (int)States.Idle)
             {
                 Console.WriteLine("m_state = States.Idle");
@@ -344,7 +297,7 @@ namespace TCO
 
         private void timeToString()
         {
-            int tempTime = m_timePending + m_timeBuffer;
+            int tempTime = m_timeConfirmed + m_timePending + m_timeBuffer;
 
             int hours = tempTime / 3600000;
             tempTime %= 3600000;
@@ -362,6 +315,33 @@ namespace TCO
 
             if (seconds > 9) m_timeStr = m_timeStr + seconds;
             else m_timeStr = m_timeStr + "0" + seconds;
+        }
+
+        private int timeStringToMilliseconds(string timeStr)
+        {
+            int result = 0;
+            string[] time = timeStr.Split(':');
+
+            int hours = 0;
+            int minutes = 0;
+            int seconds = 0;
+
+            int.TryParse(time[0], out hours);
+            int.TryParse(time[1], out minutes);
+            int.TryParse(time[2], out seconds);
+
+            result = (((((hours * 60) + minutes) * 60) + seconds) * 1000);
+            
+            return result;
+        }
+
+        private void updateTodaysLogEntries()
+        {
+            PrefsData.PrefLogIndex index = m_userPrefs.getActiveSheet();
+            LocalLogger.updateTodaysLogs(m_timeStr,
+                m_userPrefs.getLogName(index), 
+                m_userPrefs.getProjectName(index), 
+                m_userPrefs.getProjectDescription(index));
         }
 
         public void onClose()
@@ -384,26 +364,66 @@ namespace TCO
             return m_neverTimeout;
         }
 
-        public string getSheetId()
+        public string getLogGoogleId()
         {
-            return m_spreadsheetId;
+            return m_userPrefs.getLogGoogleId(m_userPrefs.getActiveSheet());
         }
-        public string getTabName()
+        public string getProjectName()
         {
-            return m_spreadsheetTab;
+            return m_userPrefs.getProjectName(m_userPrefs.getActiveSheet());
         }
-        public string getEntryDescription()
+        public string getProjectDescription()
         {
-            return m_description;
+            return m_userPrefs.getProjectDescription(m_userPrefs.getActiveSheet());
         }
-        public void setSheetsInfo(string spreadsheetId, string tabName, string description)
+        public string getLogName()
         {
-            m_spreadsheetId = spreadsheetId;
-            m_spreadsheetTab = tabName;
-            m_description = description;
-            
-            m_foundSheetAndTab = true;
-            sheetsInterfaceSetup();
+            return m_userPrefs.getLogName(m_userPrefs.getActiveSheet());
+        }
+
+        /// <summary>
+        /// Changes active the time and google sheets id to match the input log
+        /// </summary>
+        /// <param name="index"></param>
+        private void changeActiveLogData(PrefsData.PrefLogIndex index)
+        {
+            // try to get time from memory
+            m_timeStr = LocalLogger.getTodaysEntryData(
+                m_userPrefs.getLogName(index), 
+                m_userPrefs.getProjectName(index), 
+                m_userPrefs.getProjectDescription(index), 
+                LocalLogger.EntryDataIndex.Time);
+            m_timeConfirmed = timeStringToMilliseconds(m_timeStr);
+            m_timePending = 0;
+            m_timeBuffer = 0;
+
+            // let the program know a valid log+project+desc has been set
+            m_foundGoogleSheetAndTab = true;
+
+            // compare data with google sheets and act accordingly
+            googleSheetsInterfaceSetup();
+        }
+
+        /// <summary>
+        /// Changes the active log to the input log.
+        /// <para>Returns false if the log doesn't exist</para>
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public bool setActiveLog(PrefsData.PrefLogIndex index)
+        {
+            if (m_userPrefs.setActiveLog(index) == false)
+                return false;
+
+            changeActiveLogData(index);
+            Console.WriteLine("Active Sheet set to " + (int)index);
+
+            return true;
+        }
+        
+        public PrefsData getPrefData()
+        {
+            return m_userPrefs;
         }
     }
 }

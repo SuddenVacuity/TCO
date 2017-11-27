@@ -1,23 +1,48 @@
 VERSION HISTORY
 
-added	- An added feature
-remov	- A removed feature
-fixed	- id of issue - A known issue that's been fixed
-issue	- id of issue - A known issue that's been logged 
-	(an * before the id of the issue means part of the solution has been completed
-	 and the description of the issue will state what was done)
+LEGEND
+actions
+	added	- An added feature
+	remov	- A removed feature
+	fixed	- id of issue - A known issue that's been fixed
+	issue	- id of issue - A known issue that's been logged 
+		(an * before the id of the issue means part of the solution has been completed
+		 and the description of the issue will state what was done)
+features
+	ui		- user interface element
+	core	- core application element
+	media	- media resource
 
 NOTES ABOUT THIS VERSION:
-	Google.Apis.Sheets.v4 and related libraries are required.
-	This application will not run without a valid client_secret.json file in the exe directory. 
-	A client_secret.json is not included in this source code so one must be obtained from goole
-	for this application to function. https://developers.google.com/sheets/api/quickstart/go
+	Google.Apis.Sheets.v4 and related libraries are required and included with this project.
+	This application will not log to google sheets without a valid client_secret.json file in the 
+	exe directory. A client_secret.json is not included in this source code so one must be obtained 
+	from google for this application to fully function. 
+	https://developers.google.com/sheets/api/quickstart/go
 
-	The current state of the application is more of a proof-of-concept than a useful application.
-	It logs accumulated time to google sheets but no exceptions are handled so the if any exceptions
-	are thrown the program crashes and doesn't log the time passed since the last log was made.
-	For this application to log to google sheets a sheet id and access to google sheets doc must
-	for a google account must be provided.
+	The current state of the application is usable with local logging but google sheets logging
+	is not managed properly and will have a new entry for each time the log is updated.
+
+	The local log files added to this version store an entry for each logname/projectname/description
+	profile. The program uses a local log file to store data. On start it reads an existing log file to search
+	for entries that are dated with the current date and loads them to memory. While running the program 
+	modifies entries that were loaded. The log file is rewritten at each log time tick as well as when
+	the active sheet is changed or the program is closed.
+
+	New Entries are written to the top of the local log creating log files that are in 
+	reverse-chronological order. While the program is running it creates a temp file each time the 
+	internal timer ticks in order to recover current session data in the event of a crash. 
+
+v0.0.1.0 - User Preferences and Local Logging
+	fixed ui - changed ui style to bar shaped instead of a box shaped
+	fixed ui - smaller button images for new layout
+	added ui - dialog to set log profile information
+	added media - 16x16 and 32x32 icons to add to use in the notification tray
+	added core - class to handle writing and loading local log file
+	added core - support for multiple log profiles
+	added core - class to handle writing and loading user preferences
+	added core - Write log information to a local log file
+	added core - Write this session's log data to a temp file
 
 v0.0.0.0 - Initial Commit
 	added ui - Basic concept for main ui
@@ -30,4 +55,4 @@ v0.0.0.0 - Initial Commit
 	added core - Ability to create various types of requests
 	added core - Ability to create a new tab in a sheets doc and add a title bar
 	added core - Ability to append a row of cells containing data to a sheets doc
-	added core - Create rowdata
+	added core - Create rowdata to be sent to google sheets

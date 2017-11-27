@@ -5,13 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1E841D9E-EF7D-40C8-8FC1-537FC27ABA7C}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TCO</RootNamespace>
     <AssemblyName>TCO</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,7 +25,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -100,14 +100,26 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="source\debug\LocalLoggerUnitTest.cs" />
     <Compile Include="source\google\SheetsLogEntry.cs" />
     <Compile Include="source\google\TCOSheetsInterface.cs" />
-    <Compile Include="source\interface\DialogGoogleSheetsWindow.cs">
+    <Compile Include="source\interface\ControlLogData.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="source\interface\DialogSheetsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="source\interface\DialogMessage.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="source\script\Environment.cs" />
+    <Compile Include="source\script\file\LocalLogger.cs" />
+    <Compile Include="source\script\file\UserPrefs.cs" />
     <Compile Include="source\script\InputHook.cs" />
     <Compile Include="source\script\InputHookEnum.cs" />
     <Compile Include="source\script\MainProgram.cs" />
@@ -116,14 +128,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="client_secret.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -166,6 +173,42 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconActive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconIdle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconActive32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconIdle32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconNeverTimeOut32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconPause32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconTimeout32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconActive16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconIdle16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconNeverTimeOut16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconPause16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\notificationIconTimeout16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

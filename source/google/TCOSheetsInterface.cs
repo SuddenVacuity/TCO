@@ -279,6 +279,10 @@ namespace TCO
             if (m_shouldRun == false)
                 return false;
 
+            // TODO: properly validate spreadsheet id
+            if (spreadsheetId.Length == 0)
+                return false;
+
             SheetsLogEntry entrymaker = new SheetsLogEntry();
 
             List<RowData> rowDataList = new List<RowData>();

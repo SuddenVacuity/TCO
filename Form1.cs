@@ -22,8 +22,10 @@ namespace TCO
             m_program.TimerTick += (s, e) =>
             {
                 // change the display time
-                string str = m_program.getTimeString();
-                label1.Text = str;
+                string time = m_program.getTimeString();
+                string desc = m_program.getDescString();
+                label1.Text = time;
+                label2.Text = desc;
 
                 // get the program's current state
                 handleProgramState();
@@ -150,6 +152,9 @@ namespace TCO
                         m_program.logTime();
                         break;
                     }
+                case (int)Keys.D0: m_program.setActiveLog(PrefsData.PrefLogIndex.Log01); break;
+                case (int)Keys.D1: m_program.setActiveLog(PrefsData.PrefLogIndex.Log02); break;
+                case (int)Keys.D2: m_program.setActiveLog(PrefsData.PrefLogIndex.Log03); break;
                 default: break;
             }
             
@@ -182,13 +187,13 @@ namespace TCO
         {
             DialogMessage message = new DialogMessage("Helpful Information", 
                 "With the apllication in Focus:" +
-                "\n\tPress F1 to toggle Never-Time-Out mode" +
-                "\n\tPress Escape to remove all time accumulated since the last log" +
-                "\n\tPress Space to change mode as if the start/pause button was pressed" +
-                "\n\tPress Enter to force a log entry" +
+                "\n    Press F1 to toggle Never-Time-Out mode" +
+                "\n    Press Escape to remove all time accumulated since the last log" +
+                "\n    Press Space to change mode as if the start/pause button were pressed" +
+                "\n    Press Enter to write a log entry" +
                 "\n" +
-                "\nCurrently the only way to change time intervals is to change" +
-                "\nthe values in the config.prefs file that's created on close." +
+                "\nCurrently the only way to change time intervals is to change the values in the" +
+                "\nconfig.prefs file that's created on close and when a log profile is selected." +
                 "\n" +
                 "\n" +
                 "\n" +
@@ -200,42 +205,34 @@ namespace TCO
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DialogMessage message = new DialogMessage("About This Application", 
+            DialogMessage message = new DialogMessage("TCO v" + Environment.getVersion(), 
                 "TCO is a lightweight non-invasive" +
                 "\nbackground time-logging application." +
                 "\n" +
-                "\n\tNever worry about leaving your" + 
-                "\n\ttimer running or losing time for" +
-                "\n\tnot starting after a break." +
+                "\n    Never worry about leaving your" + 
+                "\n    timer running or losing time for" +
+                "\n    not starting after a break." +
                 "\n" +
-                "\n\tTCO will automatically stop" +
-                "\n\tcounting time when you leave" +
-                "\n\tand start counting again when" +
-                "\n\tyou return.\n\n\n" +
+                "\n    TCO will automatically stop" +
+                "\n    counting time when you leave" +
+                "\n    and start counting again when" +
+                "\n    you return.\n\n\n" +
                 "© Gerald Coggins 2017"
                 );
             message.Show();
         }
 
-        private void googleSheetsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void sheetsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string id = m_program.getSheetId();
-            string tab = m_program.getTabName();
-            string des = m_program.getEntryDescription();
+            PrefsData prefData = m_program.getPrefData();
 
-            if (tab == "" ||
-                tab == null)
-                tab = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(DateTime.Now.Month);
-
-            DialogGoogleSheetsWindow message = new DialogGoogleSheetsWindow(id, tab, des);
-
+            // user preferences are updated directly from this dialog
+            DialogSheetsWindow message = new DialogSheetsWindow(prefData);
             DialogResult result = message.ShowDialog();
+
             if (result == DialogResult.OK)
             {
-                m_program.setSheetsInfo(
-                    message.resultSpreadSheetId, 
-                    message.resultTabName, 
-                    message.resultDescription);
+                m_program.setActiveLog(message.m_selectedLog);
             }
         }
     }

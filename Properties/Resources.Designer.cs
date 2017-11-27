@@ -103,9 +103,9 @@ namespace TCO.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap buttonStop {
+        internal static System.Drawing.Bitmap buttonTimeout {
             get {
-                object obj = ResourceManager.GetObject("buttonStop", resourceCulture);
+                object obj = ResourceManager.GetObject("buttonTimeout", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,9 +113,99 @@ namespace TCO.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap buttonTimeout {
+        internal static System.Drawing.Bitmap notificationIconActive16 {
             get {
-                object obj = ResourceManager.GetObject("buttonTimeout", resourceCulture);
+                object obj = ResourceManager.GetObject("notificationIconActive16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap notificationIconActive32 {
+            get {
+                object obj = ResourceManager.GetObject("notificationIconActive32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap notificationIconIdle16 {
+            get {
+                object obj = ResourceManager.GetObject("notificationIconIdle16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap notificationIconIdle32 {
+            get {
+                object obj = ResourceManager.GetObject("notificationIconIdle32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap notificationIconNeverTimeOut16 {
+            get {
+                object obj = ResourceManager.GetObject("notificationIconNeverTimeOut16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap notificationIconNeverTimeOut32 {
+            get {
+                object obj = ResourceManager.GetObject("notificationIconNeverTimeOut32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap notificationIconPause16 {
+            get {
+                object obj = ResourceManager.GetObject("notificationIconPause16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap notificationIconPause32 {
+            get {
+                object obj = ResourceManager.GetObject("notificationIconPause32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap notificationIconTimeout16 {
+            get {
+                object obj = ResourceManager.GetObject("notificationIconTimeout16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap notificationIconTimeout32 {
+            get {
+                object obj = ResourceManager.GetObject("notificationIconTimeout32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

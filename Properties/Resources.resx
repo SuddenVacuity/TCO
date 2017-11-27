@@ -130,10 +130,37 @@
   <data name="buttonPause" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\buttonPause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="buttonStop" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\buttonStop.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="buttonTimeout" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\buttonTimeout.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="notificationIconActive16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\notificationIconActive16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="notificationIconActive32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\notificationIconActive32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="notificationIconIdle16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\notificationIconIdle16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="notificationIconIdle32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\notificationIconIdle32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="notificationIconNeverTimeOut16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\notificationIconNeverTimeOut16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="notificationIconNeverTimeOut32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\notificationIconNeverTimeOut32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="notificationIconPause16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\notificationIconPause16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="notificationIconPause32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\notificationIconPause32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="notificationIconTimeout16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\notificationIconTimeout16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="notificationIconTimeout32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\notificationIconTimeout32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

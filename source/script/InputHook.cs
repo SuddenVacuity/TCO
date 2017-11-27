@@ -25,6 +25,7 @@ namespace TCO
         /// is true if user activity was detected
         /// </summary>
         private static bool m_activityDetected = false;
+        private static bool m_initialized = false;
 
         /// <summary>
         /// Returns true if user activity was detected. Sets value to false after reading.
@@ -37,15 +38,8 @@ namespace TCO
             return result;
         }
 
-        // 
-        //private static Thread m_hookThread = null;
-
         public static void Start()
         {
-            //m_hookThread = new Thread(new ThreadStart(SetHooks), 0);
-            //m_hookThread.Name = Process.GetCurrentProcess().MainModule.ModuleName;
-            //m_hookThread.Priority = ThreadPriority.Normal;
-            //m_hookThread.Start();
             SetHooks();
         }
 
@@ -63,6 +57,11 @@ namespace TCO
         /// </summary>
         private static void SetHooks()
         {
+            if (m_initialized == true)
+                return;
+
+            m_initialized = true;
+
             // set input hooks
             _hookIDKey = RegisterHook(_procKey, HookId.KeyboardLowLevel);
             _hookIDMouse = RegisterHook(_procMouse, HookId.MouseLowLevel);
@@ -75,6 +74,8 @@ namespace TCO
         {
             UnhookWindowsHookEx(_hookIDKey);
             UnhookWindowsHookEx(_hookIDMouse);
+
+            m_initialized = false;
         }
 
         //////////////////////////////////////
